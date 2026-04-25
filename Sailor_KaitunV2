@@ -1,68 +1,149 @@
-script_key="PAZBmvtfMnQuAYCiZidlnGftGCPGFtUp";
-setfpscap(10)
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
 
-print("💀 script kaitun: sailor piece v2 .. cr@cked by dsc.gg/accu")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
 
-getgenv().sailorPieceConfig = {  
-    AUTO_UPDATE_RESTART = true,
-    FARM_SECRET_CHEST = true,
-    AUTO_BOSS_RUSH_AND_INFINITE_TOWER_STAT_BONUS = false,
-    FAST_MULTI_FARM = true,
-    ASCEND_UNTIL_LEVEL = 5,
-    AUTO_CELESTIAL_FAVOR_TITLE = true, -- Auto attack 5000 island bosses
-    
-    -- Autofarm
-    DO_REPEATABLE_QUEST = "QuestNPC19",
-    MULTI_FARM = { "Bunny", "ArenaFighter", "Ninja", "Swordsman", "AcademyTeacher", "Slime", "StrongSorcerer", "Curse", "Hollow", "Sorcerer", "FrostRogue", "DesertMonkey", "Monkey", "Thief" },  -- Instant tp kill npc
-    AUTO_FARM = {},  -- Auto farm ascend/quest/weapon bosses
-    SUMMON_BOSS = {},  -- Auto summon ascend/quest/weapon bosses
-    
-    -- Weapons
-    EQUIP_WEAPON = {"Strongest In History", "Ichigo", "Gryphon", "Dark Blade", "Katana"},
-    BUY_WEAPON = {"Katana", "Dark Blade", "Gryphon", "Ichigo", "Strongest In History", "Ice Queen"},
-    BLESS_WEAPON = { ["Ice Queen"] = 10, ["Strongest In History"] = 10, ["Ichigo"] = 6, ["Gryphon"] = 6, ["Dark Blade"] = 3 },
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "accuNotify"
+ScreenGui.Parent = PlayerGui
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.DisplayOrder = 999
 
-    -- Reroll
-    REROLL_RACE_UNTIL = { "Luckborn" },
-    REROLL_CLAN_UNTIL = { "Eminence" },
-    REROLL_TRAIT_UNTIL = { "Emperor" },
-    REROLL_STAT_UNTIL = { 
-        ["Damage"] = "Z", 
-        ["Defense"] = "SS", 
-        ["CooldownReduction"] = "Z", 
-        ["CritChance"] = "SSS", 
-        ["CritDamage"] = "SSS", 
-        ["DamageReduction"] = "SS", 
-        ["Luck"] = "Z" 
-    },
-    REROLL_PASSIVE_UNTIL = { 
-        ["Ice Queen"] = { "Fortune Chosen", "Executioner", "Rampage" }, 
-        ["Strongest In History"] = { "Fortune Chosen" }, 
-        ["Ichigo"] = { "Fortune Chosen", "Executioner", "Rampage", "Damage V", "Damage IV" } 
-    },
-    REROLL_POWER_UNTIL = { "Subjugator" },
+local Blur = Instance.new("BlurEffect")
+Blur.Size = 0
+Blur.Parent = Lighting
 
-    -- Artifact
-    DELETE_ARTIFACT_RARITY = { "Common" },
-    EQUIP_ARTIFACT_SET = "Abyssal Crown",
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Parent = ScreenGui
+Main.Size = UDim2.new(1, 0, 1, 0)
+Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Main.BackgroundTransparency = 1
+Main.BorderSizePixel = 0
+Main.ZIndex = 1
 
-    -- Misc
-    BUILD_MODE = "Luck",  -- Damage/Luck
-    USE_ITEM = { "Common Chest", "Rare Chest", "Epic Chest", "Legendary Chest", "Aura Crate (Untradeable)", "Cosmetic Crate (Untradeable)", "Secret Chest (Untradeable)" },
-    BUY_MERCHANT = { "Race Reroll", "Trait Reroll", "Clan Reroll", "Passive Shard", "Boss Key", "Dungeon Key", "Rush Key", "Boss Ticket", "Haki Color Reroll", "Common Chest", "Rare Chest", "Epic Chest", "Legendary Chest", "Mythical Chest", "Secret Chest" },
+local Content = Instance.new("Frame")
+Content.Name = "Content"
+Content.Parent = Main
+Content.Size = UDim2.new(0, 550, 0, 350)
+Content.Position = UDim2.new(0.5, 0, 0.5, 0)
+Content.AnchorPoint = Vector2.new(0.5, 0.5)
+Content.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+Content.BackgroundTransparency = 0.1
+Content.BorderSizePixel = 0
+Content.ZIndex = 2
 
-    -- Autotrade
-    TRADE_USERNAME = {},
-    TRADE_ITEM = {},
-    
-    -- Discord
-    WEBHOOK_ITEM_NAME = { "Aura Crate", "Cosmetic Crate", "Secret Chest" },
-    WEBHOOK_URL = "https://discord.com/api/webhooks/1490004514000994526/DwPQa9QpaSC_a7rK-FkuWkj3bz61FzuQmjQZ5Yo6W42_nz92CTbxZ2-f6Q7HHS4arOjq",
-    DISCORD_ID = "",
-    WEBHOOK_NOTE = "",
-    SHOW_PUBLIC_DISCORD_ID = false,
-    SHOW_WEBHOOK_USERNAME = false,
-    SHOW_WEBHOOK_JOBID = true,
-}
+local ContentCorner = Instance.new("UICorner")
+ContentCorner.CornerRadius = UDim.new(0, 15)
+ContentCorner.Parent = Content
 
-loadstring(game:HttpGet("https://api.luarmor.net/files/v4/loaders/1c7ac2a2f86ecf894218a424a1be7667.lua"))()
+local ContentStroke = Instance.new("UIStroke")
+ContentStroke.Thickness = 2
+ContentStroke.Color = Color3.fromRGB(255, 255, 255)
+ContentStroke.Transparency = 0.8
+ContentStroke.Parent = Content
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Name = "CloseBtn"
+CloseBtn.Parent = Content
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+CloseBtn.Position = UDim2.new(1, -40, 0, 15)
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 14
+CloseBtn.ZIndex = 10
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 5)
+CloseCorner.Parent = CloseBtn
+
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Parent = Content
+Title.Size = UDim2.new(1, -40, 0, 80)
+Title.Position = UDim2.new(0, 20, 0, 45)
+Title.BackgroundTransparency = 1
+Title.Font = Enum.Font.GothamBold
+Title.Text = "Script Này Đã Không Còn Sử Dụng Được Nữa!!"
+Title.TextColor3 = Color3.fromRGB(255, 65, 65)
+Title.TextSize = 28
+Title.TextWrapped = true
+Title.ZIndex = 5
+
+local UIStrokeTitle = Instance.new("UIStroke")
+UIStrokeTitle.Thickness = 3
+UIStrokeTitle.Color = Color3.fromRGB(0, 0, 0)
+UIStrokeTitle.Transparency = 0.4
+UIStrokeTitle.Parent = Title
+
+local Desc = Instance.new("TextLabel")
+Desc.Name = "Desc"
+Desc.Parent = Content
+Desc.Position = UDim2.new(0, 25, 0, 135)
+Desc.Size = UDim2.new(1, -50, 0, 80)
+Desc.BackgroundTransparency = 1
+Desc.Font = Enum.Font.GothamMedium
+Desc.Text = "Hãy Vào Discord Của Chúng Tôi Để Lấy Bản Kaitun Sailor Piece Mới Nhất!"
+Desc.TextColor3 = Color3.fromRGB(230, 230, 230)
+Desc.TextSize = 18
+Desc.TextWrapped = true
+Desc.ZIndex = 5
+
+local Btn = Instance.new("TextButton")
+Btn.Name = "CopyBtn"
+Btn.Parent = Content
+Btn.Position = UDim2.new(0.5, 0, 0, 255)
+Btn.Size = UDim2.new(0, 280, 0, 55)
+Btn.AnchorPoint = Vector2.new(0.5, 0)
+Btn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+Btn.Font = Enum.Font.GothamBold
+Btn.Text = "Discord: https://discord.gg/f66raEgAZp"
+Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+Btn.TextSize = 17
+Btn.AutoButtonColor = false
+Btn.ZIndex = 5
+
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 12)
+BtnCorner.Parent = Btn
+
+local UIStrokeBtn = Instance.new("UIStroke")
+UIStrokeBtn.Color = Color3.fromRGB(255, 255, 255)
+UIStrokeBtn.Transparency = 0.7
+UIStrokeBtn.Thickness = 2
+UIStrokeBtn.Parent = Btn
+
+Btn.MouseButton1Click:Connect(function()
+	pcall(function()
+		setclipboard("https://discord.gg/f66raEgAZp")
+	end)
+	Btn.Text = "Discord: https://discord.gg/f66raEgAZp"
+	Btn.BackgroundColor3 = Color3.fromRGB(67, 181, 129)
+	task.wait(1.5)
+	Btn.Text = "Discord: https://discord.gg/f66raEgAZp"
+	Btn.BackgroundColor3 = Color3.fromRGB(88, 101, 242)
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+	TweenService:Create(Main, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(Content, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+	TweenService:Create(Blur, TweenInfo.new(0.5), {Size = 0}):Play()
+	task.wait(0.5)
+	ScreenGui:Destroy()
+	Blur:Destroy()
+end)
+
+TweenService:Create(Main, TweenInfo.new(1), {BackgroundTransparency = 0.3}):Play()
+TweenService:Create(Blur, TweenInfo.new(1), {Size = 25}):Play()
+
+Btn.MouseEnter:Connect(function()
+	TweenService:Create(Btn, TweenInfo.new(0.3), {Size = UDim2.new(0, 300, 0, 60), BackgroundColor3 = Color3.fromRGB(100, 115, 255)}):Play()
+end)
+
+Btn.MouseLeave:Connect(function()
+	TweenService:Create(Btn, TweenInfo.new(0.3), {Size = UDim2.new(0, 280, 0, 55), BackgroundColor3 = Color3.fromRGB(88, 101, 242)}):Play()
+end)
